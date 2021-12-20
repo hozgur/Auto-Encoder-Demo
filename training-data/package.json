@@ -1,0 +1,17 @@
+{
+  "name": "training-data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "training-server.js",
+  "scripts": {
+    "start": "node training-server.js",
+    "start-dev": "nodemon training-server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15"
+  }
+}
