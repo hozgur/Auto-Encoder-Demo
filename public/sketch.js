@@ -83,6 +83,9 @@ function render(imgArray, x, y) {
   for (let i = 0; i < W; i++) {
     for (let j = 0; j < W; j++) {
       let val = imgArray[i + j * W];
+      if(val < 0) val = 0;
+      if(val > 1) val = 1;
+
       fill(val * 255);
       noStroke();
       square(x + i * w, j * w, w);

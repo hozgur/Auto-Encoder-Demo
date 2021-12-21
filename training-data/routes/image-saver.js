@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const router = express.Router();
-
+const numeral = require('numeral');
 
 const errorMessages = {
   ERR_NO_DATA: 'veri gönderilmesi gerekli.'
@@ -37,7 +37,8 @@ router.post("/:imageID", (req,res) => {
   {      
       let img = req.body.image.replace(/^data:image\/(png|jpg);base64,/, "") ;
       let buffer = Buffer.from(img, 'base64');
-      let imagePath = './data/image_'+req.params.imageID+'.png';
+      const num = numeral(req.params.imageID).format("0000");
+      let imagePath = './data/image_'+num+'.png';
       fs.createWriteStream(imagePath).write(buffer);
       res.status(200).send("ok.");
   }

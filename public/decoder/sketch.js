@@ -3,13 +3,13 @@ const W = 28;
 let w;
 let sliders = [];
 let outputImg;
-let latentTotal = 4;
-let z = [0.5, 0.5, 0.5, 0.5];
+let latentTotal = 2;
+let z = [0.5, 0.5];
 
 async function setup() {
   createCanvas(280, 280);
   for (let i = 0; i < latentTotal; i++) {
-    sliders.push(createSlider(0, 1, 0.5, 0.01));
+    sliders.push(createSlider(0, 100, 0.5, 0.1));
   }
   w = width / W;
   outputImg = new Array(W * W);
@@ -21,17 +21,17 @@ async function setup() {
 }
 
 async function nextImage() {
-  // for (let i = 0; i < latentTotal; i++) {
-  //   z[i] = sliders[i].value();
-  // }
+   for (let i = 0; i < latentTotal; i++) {
+     z[i] = sliders[i].value();
+   }
 
-  for (let i = 0; i < latentTotal; i++) {
-    // This should be a nice smooth opensimplex noise walk, next time!!!
-    let offset = 0.01;
-    z[i] += random(-offset, offset);
-    z[i] = constrain(z[i], 0, 1);
-    sliders[i].value(z[i]);
-  }
+  // for (let i = 0; i < latentTotal; i++) {
+  //   // This should be a nice smooth opensimplex noise walk, next time!!!
+  //   let offset = 0.01;
+  //   z[i] += random(-offset, offset);
+  //   z[i] = constrain(z[i], 0, 10);
+  //   sliders[i].value(z[i]);
+  // }
   const x_test = tf.tensor2d([z]);
   const output = decoder.predict(x_test);
   // output.print();

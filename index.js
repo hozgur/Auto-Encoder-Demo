@@ -7,24 +7,25 @@ import Jimp from "jimp";
 import numeral from "numeral";
 
 const W = 28;
-
+const imageCount = 2500;
 main();
 
 async function main() {
+  console.log(tf.getBackend());
   // Build the model
   const { decoderLayers, autoencoder } = buildModel();
   // load all image data
-  const images = await loadImages(5100);
-  // train the model
-  const x_train = tf.tensor2d(images.slice(0, 5000));
-  await trainModel(autoencoder, x_train, 200);
-  const saveResults = await autoencoder.save("file://public/model/");
+   const images = await loadImages(imageCount);
+  // // train the model
+   const x_train = tf.tensor2d(images.slice(0, imageCount - 1));
+   await trainModel(autoencoder, x_train, 200);
+   const saveResults = await autoencoder.save("file://public/model/");
 
-  console.log(autoencoder.summary());
+  // console.log(autoencoder.summary());
 
-  // const autoencoder = await tf.loadLayersModel("file://public/model/model.json");
+  //const autoencoder = await tf.loadLayersModel("file://public/model/model.json");
   // test the model
-  const x_test = tf.tensor2d(images.slice(5000));
+  const x_test = tf.tensor2d(images.slice(0,50));
   await generateTests(autoencoder, x_test);
 
   // Create a new model with just the decoder
@@ -40,8 +41,8 @@ async function generateTests(autoencoder, x_test) {
   for (let i = 0; i < newImages.length; i++) {
     const img = newImages[i];
     const buffer = [];
-    for (let n = 0; n < img.length; n++) {
-      const val = Math.floor(img[n] * 255);
+    for (let n = 0; n < img.length; n++) {      
+      const val =Math.floor(img[n] * 255);
       buffer[n * 4 + 0] = val;
       buffer[n * 4 + 1] = val;
       buffer[n * 4 + 2] = val;
@@ -69,6 +70,7 @@ function createDecoder(decoderLayers) {
       activation: layer.activation,
       inputShape: [layer.kernel.shape[0]],
     });
+    console.log(layer.kernel.shape);
     decoder.add(newLayer);
     newLayer.setWeights(layer.getWeights());
   }
@@ -113,8 +115,8 @@ function buildModel() {
   );
   autoencoder.add(
     tf.layers.dense({
-      units: 4,
-      activation: "sigmoid",
+      units: 2,
+      activation: "relu",
     })
   );
   // How do I start from here?
@@ -124,7 +126,7 @@ function buildModel() {
   decoderLayers.push(
     tf.layers.dense({
       units: 16,
-      activation: "relu",
+      activation: "relu",      
     })
   );
   decoderLayers.push(
@@ -148,7 +150,7 @@ function buildModel() {
   decoderLayers.push(
     tf.layers.dense({
       units: W * W,
-      activation: "sigmoid",
+      activation: "relu",
     })
   );
 
@@ -179,7 +181,7 @@ async function loadImages(total) {
   for (let i = 0; i < total; i++) {
     const num = numeral(i).format("0000");
     const img = await Jimp.read(
-      `AutoEncoder_TrainingData/data/square${num}.png`
+      `training-data/data/image_${num}.png`
     );
 
     let rawData = [];
